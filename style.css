@@ -1,0 +1,21 @@
+*{
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+body{
+	padding: 4rem;
+	background-color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+h1{
+	color:white;
+}
+
+canvas{
+	background-color: white;
+}
