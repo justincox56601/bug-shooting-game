@@ -7,6 +7,10 @@ export class Vector2{
 	static zero(){
 		return new Vector2(0,0);
 	}
+	
+	static one(){
+		return new Vector2(1,1);
+	}
 
 	static right(){
 		return new Vector2(1,0);

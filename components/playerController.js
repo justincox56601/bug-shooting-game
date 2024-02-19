@@ -1,12 +1,14 @@
+import { EventEnum } from "../enums/event.enum.js";
 import { Vector2 } from "../utilities/vector2.js";
 import { Component } from "./component.js";
 
 export class PlayerController extends Component{
-	constructor(moveSpeed){
+	constructor(targetTransform, moveSpeed){
 		super();
+		this._targetTransform = targetTransform;
 		this._moveSpeed = moveSpeed;
 		this._inputs = new Set();
-		this._target = Vector2.zero(); //used for rotating player.
+		
 
 		this._inputVector = Vector2.zero();
 	}
@@ -19,26 +21,25 @@ export class PlayerController extends Component{
 		this._inputs.delete(input)
 	}
 
-	_mouseMoveCallback(mousePos){
-		//this is used for rotating the player.  not used in this version of the 
-		//player controller but saving it for when I decide to use it.
-		this._target = new Vector2(mousePos.x, mousePos.y)
-	}
+	// _mouseMoveCallback(mousePos){
+	// 	//this is used for rotating the player.  not used in this version of the 
+	// 	//player controller but saving it for when I decide to use it.
+	// 	this._target = new Vector2(mousePos.x, mousePos.y)
+	// }
 
 	init(){
-		super.init();
-		this._events.subscribe('keyDown', this._keyDownCallback.bind(this));
-		this._events.subscribe('keyUp', this._keyUpCallback.bind(this));
-		this._events.subscribe('mouseMove', this._mouseMoveCallback.bind(this)); //used for rotating the player
+		this._events.subscribe(EventEnum.KEY_DOWN, this._keyDownCallback.bind(this));
+		this._events.subscribe(EventEnum.KEY_UP, this._keyUpCallback.bind(this));
+		//this._events.subscribe(EventEnum.MOUSE_MOVE, this._mouseMoveCallback.bind(this)); //used for rotating the player
 	}
 
 	update(){
-		super.update();
-
 		//for side to side only movement
-		this._inputVector = Vector2.zero();
-		if(this._inputs.has('a')){this._parent._position.add(Vector2.left().scale(this._moveSpeed))}
-		if(this._inputs.has('d')){this._parent._position.add(Vector2.right().scale(this._moveSpeed))}
+		const inputVector = Vector2.zero();
+		if(this._inputs.has('a')){inputVector.add(Vector2.left())}
+		if(this._inputs.has('d')){inputVector.add(Vector2.right())}
+
+		this._targetTransform.addToPosition(inputVector.scale(this._moveSpeed))
 
 		//for free movement around area
 		//sample code being kept for when I implement free form move controller

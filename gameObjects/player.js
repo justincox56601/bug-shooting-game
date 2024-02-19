@@ -4,10 +4,14 @@ import { Sprite } from "../components/sprite.js";
 import { BulletSpawner } from "../components/bulletSpawner.js";
 import { PlayerController } from "../components/playerController.js";
 import { BoxCollider } from "../components/boxCollider.js";
+import { DrawingUtility } from "../utilities/drawing.utility.js";
+import { LayerEnum } from "../enums/layer.enum.js";
+import { createImage } from "../utilities/utilities.js";
+
 
 export class Player extends GameObject{
 	constructor(position){
-		super(position);
+		super(position, 'Player', LayerEnum.PLAYER);
 		this._moveSpeed = 3;
 		this._velocity = Vector2.zero();
 
@@ -16,30 +20,19 @@ export class Player extends GameObject{
 	}
 
 	init(){
-		
-		
-
 		this.addComponent(new Sprite(
-			'../media/ship.png',
-			null, null, new Vector2(-75, -25)
+			createImage('../media/ship.png'),
+			null, new Vector2(300, 300), new Vector2(-75, -75)
 		));
-		this.addComponent(new PlayerController(4))
+		this.addComponent(new PlayerController(this._transform, 4))
+		this.addComponent(new BoxCollider(new Vector2(100, 100), new Vector2(-50, -50)))
 		this.addComponent(new BulletSpawner());
-		this.addComponent(new BoxCollider(new Vector2(100, 100), new Vector2(-50, 0)))
-	}
-
-	
-
-	update(canvas){
-		super.update();
-		
-		
-		
 	}
 
 	draw(ctx){
 		super.draw(ctx);
 		
+		//save this for drawing rotating ship later
 		// const angle = this._target.copy().sub(this._position).toAngle() + (Math.PI/2)
 		// ctx.save();
 		// ctx.translate(this._position.x, this._position.y);

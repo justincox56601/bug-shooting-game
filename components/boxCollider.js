@@ -1,23 +1,18 @@
+import { DrawingUtility } from "../utilities/drawing.utility.js";
 import { Vector2 } from "../utilities/vector2.js";
 import { Component } from "./component.js";
 
 export class BoxCollider extends Component{
 	constructor(size, offset, debug=false){
 		super();
-		this._collisionSystem = null;
 		this._size = size; //vector2 width, height
 		this._offset = offset; //vector2 x,y
-		this._debug = true;
+		this._debug = false;
+		this._onCollisionCallback = ()=>{return};
 	}
 
 	init(){
-		super.init();
-		this._collisionSystem = this._parent._engine.getCollisionSystem();
-		this._collisionSystem.register(this)
-		this._events.subscribe('mouseClick', (data)=>console.log(this.checkCollision({
-			upperLeft: new Vector2(data.x, data.y),
-			lowerRight: new Vector2(data.x, data.y)
-		})))
+		this._transform.setPosition(this._offset)
 	}
 
 	checkCollision(boundingBox){
@@ -33,34 +28,37 @@ export class BoxCollider extends Component{
 	getBoundingBox(){
 		//return the upper left and lower right vector2
 		return {
-			upperLeft: this._position.copy(),
-			lowerRight: this._position.copy().add(this._size)
+			upperLeft: this.getWorldPosition(),
+			lowerRight:this.getWorldPosition().add(this._size)
 		}
 	}
 
-	onCollission(){
+	getSize(){
+		return this._size;
+	}
+
+	onCollision(callback){
 		//what to do once a collision is detected
+		this._onCollisionCallback = callback;
+	}
+
+	collisionDetected(collider){
+		this._onCollisionCallback(collider)
 	}
 
 	update(){
-		super.update();
-		this._position.add(this._offset)
+		
 		
 	}
 
 	draw(ctx){
 		if(this._debug){
-			ctx.save();
-			ctx.strokeStyle = 'lime',
-			ctx.beginPath();
-			ctx.moveTo(this._position.x, this._position.y);
-			ctx.lineTo(this._position.x + this._size.x, this._position.y);
-			ctx.lineTo(this._position.x + this._size.x, this._position.y + this._size.y);
-			ctx.lineTo(this._position.x, this._position.y + this._size.y);
-			ctx.lineTo(this._position.x, this._position.y);
-			ctx.closePath();
-			ctx.stroke();
-			ctx.restore();
+			DrawingUtility.drawSquare(
+				ctx, 
+				this.getWorldPosition(),
+				this._size,
+				'lime'
+			)
 		}
 		
 	}

@@ -28,7 +28,6 @@ export class EventSystem{
 
 	publish(eventName, data){
 		const event = this._events.get(eventName);
-
 		if(event != null){
 			event.forEach(e => e(data))
 		}

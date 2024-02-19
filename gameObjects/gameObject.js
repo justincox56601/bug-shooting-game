@@ -1,36 +1,48 @@
+import { Transform } from "../components/transform.js";
+import { Vector2 } from "../utilities/vector2.js";
+import { getId } from "../utilities/utilities.js";
+import { LayerEnum } from "../enums/layer.enum.js";
+
 export class GameObject{
-	constructor(position){
-		this._position = position.copy();;
+	constructor(position = Vector2.zero(), name=this.constructor.name,  layer=LayerEnum.OBJECT){
+		this._id = getId();
+		this._name = name;
+		this._layer = layer;
+		
 		this._events = null;
 		this._engine = null;
 		this._components = [];
+
+		this._transform = new Transform(position.copy());
 	}
 
+	init(){}
+
+	//convenience method to get the object position.
 	getPosition(){
-		return this._position.copy();;
+		return this._transform.getPosition().copy();
 	}
 
-	getBoudingBox(){
-		//using this as a makeshift box collider
-		//this depends on a sprite being present - will need to fix that later
-		return {
-			topLeft: new Vector2(
-				this._position.x - this._sprite.width/2,  
-				this._position.y - this._sprite.height/2
-			),
-			bottomRight:new Vector2(
-				this._position.x + this._sprite.width/2,  
-				this._position.y + this._sprite.height/2
-			)
-		}
-	}
-
+	//called by the engine during addObject method
 	setEngine(engine){
 		this._engine = engine;
 	}
 	
+	//called by the engine during addObject method
 	setEventSystem(eventSystem){
 		this._events = eventSystem;
+	}
+
+	getId(){
+		return this._id;
+	}
+
+	getName(){
+		return this._name;
+	}
+
+	getLayer(){
+		return this._layer;
 	}
 
 	addComponent(component){
@@ -40,11 +52,20 @@ export class GameObject{
 		this._components.push(component)
 	}
 
-	init(){}
+	removeComponent(component){
+		const index = this._components.indexOf(component);
+		this._components.splice(index, 1);
+	}
 
-	update(canvas){
+	getComponentByName(componentName){
+		return this._components.find(el => el._name === componentName)
+	}
+
+	
+
+	update(deltaTime){
 		for(const component of this._components){
-			component.update(canvas);
+			component.update(deltaTime);
 		}
 	}
 
